@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from pages import home, analytics, about
+from screens import home, analytics, about
 
 st.set_page_config(page_title="My Streamlit App", layout="wide")
 
