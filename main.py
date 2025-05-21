@@ -1,24 +1,13 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
-
 from screens import home, analytics, about
-
+# st.set_page_config(layout="wide", page_title="India Tourism Dashboard")
 st.set_page_config(page_title="My Streamlit App", layout="wide")
 
-# Top Navigation Bar
-selected = option_menu(
-    menu_title=None,
-    options=["Home", "Analytics", "About"],
-    icons=["house", "bar-chart-line", "gear"],
-    menu_icon="cast",
-    default_index=0,
-    orientation="horizontal",
-)
+tab = st.tabs(["Home", "Analytics", "About"])
 
-# Page Routing
-if selected == "Home":
+with tab[0]:
     home.render()
-elif selected == "Analytics":
+with tab[1]:
     analytics.render()
-elif selected == "About":
+with tab[2]:
     about.render()

@@ -2,3 +2,4 @@ streamlit
 streamlit-option-menu
 snowflake-connector-python
 pandas
+plotly>=5.0.0
