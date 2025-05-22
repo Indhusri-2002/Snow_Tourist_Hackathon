@@ -5,6 +5,7 @@ from services.snowflake_connector import get_snowflake_connection
 
 @st.cache_data(ttl=600)
 def load_all_data():
+    #avi
     conn = get_snowflake_connection()
 
     try:
