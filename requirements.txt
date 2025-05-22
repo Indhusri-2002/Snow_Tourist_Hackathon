@@ -3,3 +3,5 @@ streamlit-option-menu
 snowflake-connector-python
 pandas
 plotly>=5.0.0
+folium
+streamlit_folium
