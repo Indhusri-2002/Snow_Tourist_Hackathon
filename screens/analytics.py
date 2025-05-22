@@ -1,17 +1,15 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import textwrap
 from services.snowflake_connector import get_snowflake_connection
 
 @st.cache_data(ttl=600)
 def load_all_data():
-    #avi
     conn = get_snowflake_connection()
 
     try:
         df_fee = pd.read_sql("SELECT * FROM CURATE.FCT_FEE_INDIA_RNK", conn)
-        # df_gdp = pd.read_sql("SELECT * FROM CURATE.FCT_GDP_JOBS_MIL", conn)
-        # df_jobs_cat = pd.read_sql("SELECT * FROM CURATE.FCT_JOBS_CAT_MIL", conn)
         df_state_jobs = pd.read_sql("SELECT * FROM STAGE.STG_STATE_JOBS_15_16_LAKH", conn)
         df_scheme_amt = pd.read_sql("SELECT * FROM STAGE.STG_SCHEME_AMT", conn)
         df_tour_stat = pd.read_sql("SELECT * FROM STAGE.STG_TOUR_STAT", conn)
@@ -23,8 +21,6 @@ def load_all_data():
 
     return {
         "fee": df_fee,
-        # "gdp": df_gdp,
-        # "jobs_cat": df_jobs_cat,
         "gdp_jobs" : df_gdp_jobs,
         "state_jobs": df_state_jobs,
         "scheme_amt": df_scheme_amt,
@@ -33,7 +29,48 @@ def load_all_data():
     }
 
 
-def render():
+def render():  
+    total_jobs = 68.07
+    latest_fee = 20.06 
+    growth_rate = 26.4
+    max_tourists = 17.91
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    def kpi_card(title, value, subtitle="", delta=None):
+        delta_html = ""
+        if delta:
+            delta_value = float(delta.replace('%', '').replace('+', ''))
+            if delta_value < 0:
+                delta_html = f"<p style='color:red; margin: 4px 0;'>▼ {abs(delta_value):.2f}%</p>"
+            else:
+                delta_html = f"<p style='color:green; margin: 4px 0;'>▲ {delta_value:.2f}%</p>"
+
+        subtitle_html = f"<p style='color:gray; margin:4px 0;'>{subtitle}</p>" if subtitle else ""
+
+        html = f"""
+        <div style="border:1px solid #ccc; border-radius:10px; padding:15px; text-align:center;">
+            <h4 style="margin-bottom:5px;">{title}</h4>
+            <h2 style="margin:0;">{value}</h2>
+            {delta_html}
+            {subtitle_html}
+        </div>
+        """
+        return textwrap.dedent(html)
+
+    with col1:
+        st.markdown(kpi_card("Total Tourism Jobs", f"{total_jobs} mil", "By 2020" , delta = "-1.97%"), unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(kpi_card("Tourism FEE (in Rs)", f"{latest_fee}k", "By Aug 2024", delta = "-18.25%" ), unsafe_allow_html=True)
+
+    with col3:
+        st.markdown(kpi_card("YoY Growth - FEE", f"{growth_rate}%", "By 2021", delta="103.3%"), unsafe_allow_html=True)
+
+    with col4:
+        st.markdown(kpi_card("Maximum Tourists", f"{max_tourists} mil", "In 2019" ,delta = "2.81%" ), unsafe_allow_html=True)
+
+    
     dfs = load_all_data()
     df_fee = dfs['fee']
 
@@ -54,37 +91,55 @@ def render():
         fig_rank.update_yaxes(title="Rank (Lower is Better)")
         st.plotly_chart(fig_rank, use_container_width=True)
 
-    # --- Visualizations ---
     st.header("Tourist Categories Overview (FTAs, NRIs, ITAs)")
     df_tour_stat = dfs['tour_stat']
 
     col1, col2 = st.columns(2)
 
+    df_renamed = df_tour_stat.rename(columns={
+    "FTAS": "Foreign Tourists",
+    "NRIS": "NRIs",
+    "ITAS": "Indian Tourists"
+})
     with col1:
         fig_tourists = px.line(
-            df_tour_stat,
+            df_renamed,
             x="YR",
-            y=["FTAS", "NRIS", "ITAS"],
+            y=["Foreign Tourists", "NRIs", "Indian Tourists"],
             markers=True,
-            labels={"value": "Tourist Count in Millions", "variable": "Category", "YR": "Year"},
-            title="Foreign Tourists (FTAs), NRIs, and ITAs Over Years"
+            labels={
+                "value": "Tourist Count in Millions",
+                "variable": "Category",
+                "YR": "Year"
+            },
+            title="Foreign Tourists (FTAs), NRIs, and Indian Tourists Over Years"
         )
+
         st.plotly_chart(fig_tourists, use_container_width=True)
+
+    df_pct_renamed = df_tour_stat.rename(columns={
+        "FTAS_PER_CHANGE": "FTAs % Change",
+        "NRIS_PER_CHANGE": "NRIs % Change",
+        "ITAS_PER_CHANGE": "ITAs % Change"
+    })
 
     with col2:
         fig_pct = px.line(
-            df_tour_stat,
+            df_pct_renamed,
             x="YR",
-            y=["FTAS_PER_CHANGE", "NRIS_PER_CHANGE", "ITAS_PER_CHANGE"],
+            y=["FTAs % Change", "NRIs % Change", "ITAs % Change"],
             markers=True,
-            labels={"value": "Percentage Change (%)", "variable": "Category", "YR": "Year"},
+            labels={
+                "value": "Percentage Change (%)",
+                "variable": "Category",
+                "YR": "Year"
+            },
             title="Yearly % Change in FTAs, NRIs, and ITAs"
         )
         st.plotly_chart(fig_pct, use_container_width=True)
 
 
 
-# Ensure numeric columns are converted properly
     df_jobs_gdp = dfs['gdp_jobs']
     df_jobs_gdp[["SHR_PER", "DIR_PER", "IND_PER", "GDP_SHR_PER", "TOTAL"]] = (
         df_jobs_gdp[["SHR_PER", "DIR_PER", "IND_PER", "GDP_SHR_PER", "TOTAL"]]
@@ -97,20 +152,33 @@ def render():
 
     col1, col2, col3 = st.columns(3)
 
+    df_jobs_gdp_renamed = df_jobs_gdp.rename(columns={
+        "SHR_PER": "Tourism Employment Share (%)",
+        "DIR_PER": "Direct Employment by Tourism (%)",
+        "IND_PER": "Indirect Employment by Tourism (%)"
+    })
+
     with col1:
-        # st.markdown("#### Share of Total, Direct & Indirect Tourism Jobs")
         fig1 = px.line(
-            df_jobs_gdp,
+            df_jobs_gdp_renamed,
             x="YR",
-            y=["SHR_PER", "DIR_PER", "IND_PER"],
-            labels={"value": "Percentage", "YR": "Year", "variable": "Type"},
+            y=[
+                "Tourism Employment Share (%)",
+                "Direct Employment by Tourism (%)",
+                "Indirect Employment by Tourism (%)"
+            ],
+            labels={
+                "value": "Percentage",
+                "YR": "Year",
+                "variable": "Employment Type"
+            },
             markers=True,
-            title = "Share of Total, Direct & Indirect Tourism Jobs"
+            title="Share of Total, Direct & Indirect Tourism Jobs"
         )
         st.plotly_chart(fig1, use_container_width=True)
 
+
     with col2:
-        # st.markdown("#### Tourism GDP Share Over the Years")
         fig2 = px.bar(
             df_jobs_gdp,
             x="YR",
@@ -121,7 +189,6 @@ def render():
         st.plotly_chart(fig2, use_container_width=True)
 
     with col3:
-        # st.markdown("#### Total Tourism Jobs (in Millions)")
         fig3 = px.area(
             df_jobs_gdp,
             x="YR",
@@ -133,33 +200,24 @@ def render():
     
 
     df_state_jobs = dfs['state_jobs']
-# --- Visualizations ---
     st.header("Jobs by State (2015-16)")
     col1, = st.columns(1)
 
-    # with col1:
-    #     # st.subheader("Jobs by State (Horizontal Bar Chart)")
-    #     fig_state_jobs_h = px.bar(
-    #         df_state_jobs.sort_values("JOB_COUNT", ascending=True),
-    #         x="JOB_COUNT",
-    #         y="STATE",
-    #         orientation='h',
-    #         labels={"STATE": "State", "JOB_COUNT": "Number of Jobs"},
-    #         title="Tourism-Related Jobs by State (2015-16)",
-    #         height=600,
-    #     )
-    #     st.plotly_chart(fig_state_jobs_h, use_container_width=True)
-
+    df_sorted = df_state_jobs.sort_values("JOB_COUNT")
     with col1:
-        # st.subheader("Jobs Distribution by State (Donut Chart)")
-        fig_state_jobs_donut = px.pie(
-            df_state_jobs,
-            names='STATE',
-            values='JOB_COUNT',
-            hole=0.4,
-            title="Tourism-Related Jobs by State (2015-16)"
+        fig_state_jobs_heat = px.density_heatmap(
+            df_sorted,
+            y="STATE",
+            x=["Jobs"] * len(df_sorted), 
+            z="JOB_COUNT",
+            color_continuous_scale="YlOrRd",
+            labels={"z": "Tourism Jobs", "STATE": "State"},
+            title="Heatmap of Tourism-Related Jobs by State (2015-16)"
         )
-        st.plotly_chart(fig_state_jobs_donut, use_container_width=True)
+
+        fig_state_jobs_heat.update_layout(xaxis_showticklabels=False)
+
+        st.plotly_chart(fig_state_jobs_heat, use_container_width=True)
 
     
 
@@ -167,27 +225,34 @@ def render():
 
     col1, col2 = st.columns(2)
 
-    # with col1:
-    #     # st.subheader("Total Receipts Over Years")
-    #     fig = px.line(df_fee, x="YR", y="RECEIPTS", markers=True,
-    #                 labels={"YR": "Year", "RECEIPTS": "Receipts (in Dol)"},
-    #                 title="Tourism Receipts Over Years")
-    #     st.plotly_chart(fig, use_container_width=True)
-
+    df_fee_renamed = df_fee.rename(columns={
+        "RECEIPTS_GROWTH": "Tourism Receipts Growth (%)",
+        "FEE_GROWTH": "Foreign Exchange Earnings Growth (%)"
+    })
     with col2:
-        # st.subheader("Receipts Growth & Fee Growth (%)")
-        fig_growth = px.line(df_fee, x="YR", y=["RECEIPTS_GROWTH", "FEE_GROWTH"],
-                            markers=True,
-                            labels={"value": "Growth (%)", "YR": "Year", "variable": "Metric"},
-                            title="Yearly Growth in Receipts and Fee")
+        fig_growth = px.line(
+            df_fee_renamed,
+            x="YR",
+            y=[
+                "Tourism Receipts Growth (%)",
+                "Foreign Exchange Earnings Growth (%)"
+            ],
+            markers=True,
+            labels={
+                "value": "Growth (%)",
+                "YR": "Year",
+                "variable": "Metric"
+            },
+            title="Yearly Growth in Receipts and Foreign Exchange Earnings"
+        )
         st.plotly_chart(fig_growth, use_container_width=True)
+
 
 
 
 
     df_month = dfs['monthly_fee']
 
-    # Melt the data to long format for month-wise plotting
     df_melted = df_month.melt(id_vars="YR", var_name="Month", value_name="Fee")
     month_order = ['JANUARY',
                     'FEBRUARY',
@@ -203,23 +268,15 @@ def render():
                     'DECEMBER'
                     ]
     df_melted["Month"] = pd.Categorical(df_melted["Month"], categories=month_order, ordered=True)
-    df_melted["Fee"] = pd.to_numeric(df_melted["Fee"], errors="coerce")  # Convert Fee to numeric
+    df_melted["Fee"] = pd.to_numeric(df_melted["Fee"], errors="coerce") 
     df_melted = df_melted.sort_values(["YR", "Month"])
 
-    # col1, col2 = st.columns(2)
 
     with col1:
         fig_line = px.line(df_melted, x="Month", y="Fee", color="YR", markers=True,
                         labels={"Fee": "Fee Amount", "Month": "Month", "YR": "Year"},
                         title="Monthly Fee Trend by Year")
         st.plotly_chart(fig_line, use_container_width=True)
-
-    # with col2:
-    #     avg_fee_by_month = df_melted.groupby("Month")["Fee"].mean().reset_index()
-    #     fig_bar = px.bar(avg_fee_by_month, x="Month", y="Fee",
-    #                     labels={"Fee": "Avg Fee", "Month": "Month"},
-    #                     title="Average Monthly Fee (Across All Years)")
-    #     st.plotly_chart(fig_bar, use_container_width=True)
 
 
 
@@ -230,8 +287,6 @@ def render():
     col1, col2 = st.columns(2)
 
     with col1:
-        # st.subheader("Yearly Amount Sanctioned (Total)")
-        # df_sanc_yearly = df_scheme.groupby("YR")["AMT_SANC"].sum().reset_index()
         df_scheme["AMT_SANC"] = pd.to_numeric(df_scheme["AMT_SANC"], errors="coerce")
 
         df_sanc_yearly = (
@@ -248,7 +303,6 @@ def render():
 
 
     with col2:
-        # st.subheader("Top Circuits by Amount Sanctioned")
         df_top_circuits = df_scheme.groupby("CIRCUIT")["AMT_SANC"].sum().reset_index()
         df_top_circuits = df_top_circuits.sort_values("AMT_SANC", ascending=False).head(10)
 
