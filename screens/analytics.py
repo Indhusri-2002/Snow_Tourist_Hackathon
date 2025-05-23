@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import textwrap
 from services.snowflake_connector import get_snowflake_connection
 
@@ -15,6 +16,7 @@ def load_all_data():
         df_tour_stat = pd.read_sql("SELECT * FROM STAGE.STG_TOUR_STAT", conn)
         df_monthly_fee = pd.read_sql("SELECT * FROM STAGE.STG_IND_FEE", conn)
         df_gdp_jobs = pd.read_sql("SELECT * FROM CURATE.FCT_JOBS_GDP_CAT_MIL", conn)
+        df_amt_ftas = pd.read_sql("SELECT * FROM CURATE.FCT_AMT_FTAS", conn)
 
     finally:
         conn.close()
@@ -26,6 +28,7 @@ def load_all_data():
         "scheme_amt": df_scheme_amt,
         "tour_stat": df_tour_stat,
         "monthly_fee": df_monthly_fee,
+        "amt_ftas":df_amt_ftas,
     }
 
 
@@ -281,6 +284,7 @@ def render():
 
 
     df_scheme = dfs['scheme_amt']
+    df_amt_ftas = dfs['amt_ftas']
 
     st.header("Tourism Scheme Funding Overview")
 
@@ -303,13 +307,38 @@ def render():
 
 
     with col2:
-        df_top_circuits = df_scheme.groupby("CIRCUIT")["AMT_SANC"].sum().reset_index()
-        df_top_circuits = df_top_circuits.sort_values("AMT_SANC", ascending=False).head(10)
+        # df_top_circuits = df_scheme.groupby("CIRCUIT")["AMT_SANC"].sum().reset_index()
+        # df_top_circuits = df_top_circuits.sort_values("AMT_SANC", ascending=False).head(10)
 
-        fig_top_circuits = px.bar(df_top_circuits, x="AMT_SANC", y="CIRCUIT", orientation="h",
-                                labels={"AMT_SANC": "Amount Sanctioned (₹ Cr)", "CIRCUIT": "Circuit"},
-                                title="Top 10 Circuits by Sanctioned Amount")
-        st.plotly_chart(fig_top_circuits, use_container_width=True)
+        # fig_top_circuits = px.bar(df_top_circuits, x="AMT_SANC", y="CIRCUIT", orientation="h",
+        #                         labels={"AMT_SANC": "Amount Sanctioned (₹ Cr)", "CIRCUIT": "Circuit"},
+        #                         title="Top 10 Circuits by Sanctioned Amount")
+        # st.plotly_chart(fig_top_circuits, use_container_width=True)
+        fig = go.Figure()
+
+# Line for Amount Sanctioned
+        fig.add_trace(go.Bar(
+            x=df_amt_ftas["YR"], y=df_amt_ftas["AMT_SANC"], name="Amount Sanctioned (Cr)",
+            marker_color="royalblue", yaxis="y1"
+        ))
+
+        # Line for FTAs
+        fig.add_trace(go.Scatter(
+            x=df_amt_ftas["YR"], y=df_amt_ftas["FTAS"], name="Foreign Tourist Arrivals (Mil)",
+            mode="lines+markers", marker_color="orange", yaxis="y2"
+        ))
+
+        # Layout
+        fig.update_layout(
+            xaxis=dict(title="Year"),
+            yaxis=dict(title="Amount Sanctioned (Cr)", side="left"),
+            yaxis2=dict(title="FTAs (Mil)", overlaying="y", side="right"),
+            legend=dict(x=0.01, y=0.99),
+            height=500
+        )
+
+        st.plotly_chart(fig)
+
 
 
 
