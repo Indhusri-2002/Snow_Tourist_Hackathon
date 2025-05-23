@@ -2,31 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import textwrap
-from services.snowflake_connector import get_snowflake_connection
-
-@st.cache_data(ttl=600)
-def load_all_data():
-    conn = get_snowflake_connection()
-
-    try:
-        df_fee = pd.read_sql("SELECT * FROM CURATE.FCT_FEE_INDIA_RNK", conn)
-        df_state_jobs = pd.read_sql("SELECT * FROM STAGE.STG_STATE_JOBS_15_16_LAKH", conn)
-        df_scheme_amt = pd.read_sql("SELECT * FROM STAGE.STG_SCHEME_AMT", conn)
-        df_tour_stat = pd.read_sql("SELECT * FROM STAGE.STG_TOUR_STAT", conn)
-        df_monthly_fee = pd.read_sql("SELECT * FROM STAGE.STG_IND_FEE", conn)
-        df_gdp_jobs = pd.read_sql("SELECT * FROM CURATE.FCT_JOBS_GDP_CAT_MIL", conn)
-
-    finally:
-        conn.close()
-
-    return {
-        "fee": df_fee,
-        "gdp_jobs" : df_gdp_jobs,
-        "state_jobs": df_state_jobs,
-        "scheme_amt": df_scheme_amt,
-        "tour_stat": df_tour_stat,
-        "monthly_fee": df_monthly_fee,
-    }
+from utils.data_loader import load_datasets
 
 
 def render():  
@@ -71,7 +47,7 @@ def render():
         st.markdown(kpi_card("Maximum Tourists", f"{max_tourists} mil", "In 2019" ,delta = "2.81%" ), unsafe_allow_html=True)
 
     
-    dfs = load_all_data()
+    dfs = load_datasets()
     df_fee = dfs['fee']
 
     st.subheader("India's Global Tourism Share and Rank")
