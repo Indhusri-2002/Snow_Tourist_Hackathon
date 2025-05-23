@@ -81,12 +81,6 @@ def render_artforms_section(df_artforms):
                     st.markdown("---")
 
 
-
-import streamlit as st
-import streamlit.components.v1 as components
-import os
-import base64
-
 def render_experiences_section(df_experiences):
     st.header("Immersive Cultural Experiences")
 
