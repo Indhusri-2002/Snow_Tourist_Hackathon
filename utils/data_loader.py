@@ -14,6 +14,8 @@ def load_datasets():
         df_gdp_jobs = pd.read_sql("SELECT * FROM CURATE.FCT_JOBS_GDP_CAT_MIL", conn)
         df_untouched = pd.read_sql("SELECT * FROM STAGE.STG_UNTOUCHED_PLACES", conn)
         df_amt_ftas = pd.read_sql("SELECT * FROM CURATE.FCT_AMT_FTAS", conn)
+        df_artforms = pd.read_sql("SELECT * FROM STAGE.STG_ARTFORMS_OF_INDIA", conn)
+        df_experiences = pd.read_sql("SELECT * FROM STAGE.STG_CULTURAL_EXPERIENCES", conn)
 
     finally:
         conn.close()
@@ -27,4 +29,7 @@ def load_datasets():
         "monthly_fee": df_monthly_fee,
         "untouched": df_untouched,
         "amt_ftas":df_amt_ftas,
+        "art_forms":df_artforms,
+        "experiences":df_experiences,
+
     }

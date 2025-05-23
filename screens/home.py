@@ -2,20 +2,10 @@ import streamlit as st
 import pandas as pd
 import os
 from PIL import Image, ImageOps
-from services.snowflake_connector import get_snowflake_connection
+from utils.data_loader import load_datasets
 import base64
 import streamlit.components.v1 as components
 
-# Cache DB calls for 10 minutes
-@st.cache_data(ttl=600)
-def load_art_and_experience_data():
-    conn = get_snowflake_connection()
-    try:
-        df_artforms = pd.read_sql("SELECT * FROM STAGE.STG_ARTFORMS_OF_INDIA", conn)
-        df_experiences = pd.read_sql("SELECT * FROM STAGE.STG_CULTURAL_EXPERIENCES", conn)
-    finally:
-        conn.close()
-    return df_artforms, df_experiences
 
 def render_image_card(image_path, width=300, height=200):
     if os.path.exists(image_path):
@@ -222,8 +212,10 @@ def render():
     """, unsafe_allow_html=True)
 
     # Load Data
-    df_artforms, df_experiences = load_art_and_experience_data()
+    dfs = load_datasets()
 
+    df_artforms = dfs["art_forms"]
+    df_experiences = dfs["experiences"]
     # Container
     st.markdown('<div class="center-container">', unsafe_allow_html=True)
 
