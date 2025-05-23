@@ -3,59 +3,199 @@ from PIL import Image
 import pandas as pd
 import folium
 from streamlit_folium import st_folium
-
+from components.UntouchedPlaces import untouched_places
 
 def render():
     # --- Hero Section with Text Left & Image Right ---
-    st.title("🌿 Responsible Tourism in India")
-    st.markdown("Travel with respect. Travel with purpose. Discover India sustainably.")
 
-    col1, col2 = st.columns([2, 1])  # Text wider, image narrower
-
-    with col1:
-        st.markdown("""
-            Responsible tourism means **traveling in a way that minimizes negative impact** on the environment, 
-            respects local cultures, and benefits local communities.
-
-            Whether you're exploring the Himalayas, relaxing on a Goan beach, or wandering through Rajasthan's deserts — your choices matter.
-
-            ---
-
-            ✅ **Environmental Responsibility**  
-            Travelers are encouraged to conserve natural resources, avoid pollution, and protect wildlife. This includes respecting biodiversity, staying on marked trails, and reducing your carbon footprint by choosing sustainable modes of transport.
-
-            ✅ **Cultural Sensitivity**  
-            Every region in India has its own traditions, languages, and social practices. Being respectful to local customs, dressing appropriately, and engaging with local heritage fosters deeper connections and avoids cultural imposition.
-
-            ✅ **Community Empowerment**  
-            Responsible tourism ensures that **local communities benefit directly** from tourism. This can include staying in family-run homestays, purchasing local handicrafts, and hiring local guides — creating jobs and preserving traditional livelihoods.
-
-            ✅ **Sustainable Experiences**  
-            Instead of high-impact luxury travel, responsible tourism promotes **low-impact, meaningful experiences** — such as participating in local festivals, volunteering for conservation, or learning indigenous crafts.
-
-            ✅ **Leave No Trace**  
-            It’s vital to leave tourist places as you found them — or better. Avoid littering, use reusable items, and don’t disturb natural habitats or cultural monuments.
-
-            ---
-
-            🌍 By choosing responsible tourism, you're not just a visitor — you're a contributor to a more sustainable, inclusive, and conscious way of exploring the world.
-            """)
-
-    with col2:
-        banner = Image.open("images/incredible_india.jpg")
-        st.image(banner, caption="Experience India Responsibly", use_container_width=True)
-
-    # Full-width content continues after image height
-    st.markdown("---")
-    st.header("Principles of Responsible Travel")
     st.markdown("""
-    - 🌱 **Respect Local Culture** – Dress modestly, ask before photographing people, and follow local customs.  
-    - 🧼 **Minimize Waste** – Carry reusable bottles, bags, and avoid single-use plastics.  
-    - 🚌 **Use Public Transport** – Choose local transport or shared travel options when possible.  
-    - 🏡 **Support Local Businesses** – Stay in homestays, eat at local eateries, buy local handicrafts.  
-    - 🐘 **Say No to Exploitation** – Avoid attractions that exploit animals or people.  
-    - 🛤️ **Leave No Trace** – Take only memories, leave only footprints.  
-    """)
+    <style>
+    .header-section {
+        animation: fadeIn 1.2s ease-in-out forwards;
+        opacity: 0;
+        padding: 20px;
+        border-radius: 12px;
+        background-color: #e3f4fc;
+        color: #333;
+        background: linear-gradient(90deg,rgba(250, 255, 240, 1) 0%, rgba(173, 213, 255, 1) 50%, rgba(232, 255, 232, 1) 100%);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        margin-top: 20px;
+        margin-bottom: 20px;
+        font-family: 'Segoe UI', sans-serif;
+        text-align: center;
+    }
+
+    .header-section h1 {
+        font-size: 2.4em;
+        color: #0a48b2;
+        margin-bottom: 10px;
+    }
+
+    .typewriter {
+        overflow: hidden;
+        border-right: .15em solid #777;
+        white-space: nowrap;
+        margin: 0 auto 20px auto;
+        letter-spacing: .05em;
+        animation: typing 4s steps(60, end), blink-caret 0.75s step-end infinite;
+        font-style: italic;
+        color: #777;
+        font-size: 1.2em;
+        width: 100%;
+        max-width: 650px;
+    }
+
+    /* Text content section */
+    .content-section {
+        animation: fadeIn 1.5s ease-in-out forwards;
+        opacity: 0;
+        padding: 20px;
+        background-color: #e3f4fc;
+        border-radius: 12px;
+        color: #333;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 1.05em;
+        line-height: 1.6;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        gap:10px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: #333 }
+    }
+    </style>
+
+    <!-- Header Section -->
+    <div class="header-section">
+        <h1>Responsible Tourism in India</h1>
+        <div class="typewriter">"Travel with respect. Travel with purpose. Discover India sustainably."</div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content-section">
+        <p>Responsible tourism is about <strong>making mindful choices</strong> that preserve the environment, 
+        respect cultural traditions, and empower local communities.</p>
+        <p>Whether you're trekking in the Himalayas, relaxing on a coastal beach, or exploring desert heritage —
+        <strong>how</strong> you travel matters.</p>
+        <p>🌍 By traveling responsibly, you become more than a tourist — 
+        <em>you become a positive force for sustainability and inclusion.</em></p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+
+
+    st.markdown("""
+    <style>
+    .tip-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .tip-box {
+        flex: 1 1 calc(48% - 10px);
+        display: flex;
+        align-items: center;
+        border: 1px solid #444;
+        border-radius: 12px;
+        padding: 12px 16px;
+        background-color: #e3f4fc;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+        color: #333;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease forwards;
+        animation-fill-mode: forwards;
+        margin-bottom: 10px;
+    }
+
+    .tip-box:nth-child(1) { animation-delay: 0s; }
+    .tip-box:nth-child(2) { animation-delay: 0.1s; }
+    .tip-box:nth-child(3) { animation-delay: 0.2s; }
+    .tip-box:nth-child(4) { animation-delay: 0.3s; }
+    .tip-box:nth-child(5) { animation-delay: 0.4s; }
+    .tip-box:nth-child(6) { animation-delay: 0.5s; }
+
+    .tip-box:hover {
+        transform: scale(1.03);
+        box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .tip-icon {
+        font-size: 32px;
+        margin-right: 15px;
+    }
+
+    .tip-text {
+        font-size: 16px;
+        color: #333;
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .tip-box {
+            flex: 1 1 100%;
+        }
+    }
+    </style>
+
+    <div class="tip-container">
+        <div class="tip-box">
+            <div class="tip-icon">🧭</div>
+            <div class="tip-text"><strong>Respect Local Traditions</strong> – Be culturally aware; ask before taking photos, dress appropriately, and follow community norms.</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-icon">🌿</div>
+            <div class="tip-text"><strong>Reduce Environmental Impact</strong> – Carry reusables, avoid littering, and steer clear of plastic pollution.</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-icon">🚉</div>
+            <div class="tip-text"><strong>Use Sustainable Transport</strong> – Opt for public transport, shared rides, or non-motorized travel like walking and cycling.</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-icon">🛍️</div>
+            <div class="tip-text"><strong>Support Local Economies</strong> – Prefer small-scale local businesses, artisans, and cooperatives over large chains.</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-icon">🐾</div>
+            <div class="tip-text"><strong>Avoid Harmful Attractions</strong> – Skip wildlife shows, elephant rides, or any activity that exploits animals or people.</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-icon">🚯</div>
+            <div class="tip-text"><strong>Leave No Trace</strong> – Respect all places — natural or cultural — by preserving their beauty and cleanliness.</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 
 
     st.markdown("---")
@@ -66,88 +206,68 @@ def render():
         {
             "title": "Sikkim – India's First Organic State",
             "desc": (
-                "Sikkim has set a global benchmark by becoming India's first fully organic state. "
-                "Its commitment to banning chemical fertilizers and pesticides has helped preserve its rich biodiversity. "
-                "The government actively promotes eco-friendly practices such as banning single-use plastics and supporting local homestays, "
-                "ensuring that tourism benefits local communities. From terraced farms to ancient monasteries, visitors experience a blend of natural beauty and deep-rooted culture."
+                "Sikkim is India's first fully organic state, known for eco-friendly farming and a ban on single-use plastics. "
+                "Terraced farms, monasteries, and local homestays highlight its natural beauty and sustainable tourism."
             ),
             "img": "images/sikkim.jpg",
             "link": "https://sikkimtourism.gov.in",
             "location": "https://www.google.com/maps/place/Sikkim"
-
         },
         {
             "title": "Mawlynnong, Meghalaya – Asia's Cleanest Village",
             "desc": (
-                "Renowned as 'God’s own garden', Mawlynnong has earned its title as Asia’s cleanest village. "
-                "This community-led model of cleanliness promotes waste segregation, composting, and plastic bans. "
-                "Visitors are encouraged to follow eco-friendly practices while enjoying the village's stone pathways, bamboo skywalks, and hospitality in traditional homestays. "
-                "Mawlynnong exemplifies how tourism and sustainable living can go hand in hand."
+                "Nicknamed 'God’s Own Garden', Mawlynnong is famous for its cleanliness and plastic-free policies. "
+                "Visitors enjoy bamboo skywalks, stone paths, and eco-conscious homestays."
             ),
             "img": "images/mawlynnong.jpg",
             "link": "https://www.meghalayatourism.in",
             "location": "https://www.google.com/maps/place/Mawlynnong"
-
         },
         {
             "title": "Thenmala, Kerala – India’s First Eco-Tourism Hub",
             "desc": (
-                "Nestled in the Western Ghats, Thenmala integrates adventure, nature, and culture with ecological awareness. "
-                "It offers well-managed nature trails, forest treks, and tree-top huts while minimizing human impact on the environment. "
-                "Cultural performances and local cuisine enhance the visitor experience, and eco-guides from nearby communities offer insight into conservation practices. "
-                "Thenmala is a role model for responsible tourism in forest regions."
+                "Thenmala offers forest treks, tree huts, and cultural shows while preserving the Western Ghats ecosystem. "
+                "Trained local guides enhance the eco-tourism experience."
             ),
             "img": "images/thenmala.jpeg",
             "link": "https://www.thenmalaecotourism.com",
             "location": "https://www.google.com/maps/place/Thenmala"
-
         },
         {
             "title": "Khonoma, Nagaland – Conservation Village",
             "desc": (
-                "Khonoma is a shining example of a community taking conservation into its own hands. "
-                "Once reliant on hunting, this Angami tribal village has now banned hunting and created its own wildlife sanctuary. "
-                "Tourists are welcomed into heritage homes and shown local customs and eco-friendly lifestyles. "
-                "The village promotes cultural pride and biodiversity preservation while offering a serene experience."
+                "This Angami tribal village has banned hunting and created its own wildlife sanctuary. "
+                "Visitors experience traditional lifestyles and serene, green landscapes."
             ),
             "img": "images/khonoma.jpg",
             "link": "https://tourism.nagaland.gov.in",
             "location": "https://www.google.com/maps/place/Khonoma"
-
         },
         {
             "title": "Majuli, Assam – World’s Largest River Island",
             "desc": (
-                "Majuli is a cultural and ecological gem located in the Brahmaputra River. "
-                "Its unique geography is complemented by the satras (monastic institutions) that preserve ancient Assamese arts, dance, and music. "
-                "The island faces the threat of erosion, making responsible tourism crucial. Eco-friendly homestays and efforts to conserve wetland biodiversity are core to the experience. "
-                "Travelers are encouraged to engage with local artisans and support traditional mask-making and pottery."
+                "Majuli blends culture and ecology with satras, mask-making, and wetland conservation. "
+                "Eco-stays and artisan interaction enrich this island visit."
             ),
             "img": "images/majuli.jpg",
             "link": "https://tourism.assam.gov.in/portlets/majuli",
             "location": "https://www.google.com/maps/place/Majuli"
-
         },
         {
             "title": "Matheran, Maharashtra – India's Car-Free Hill Station",
             "desc": (
-                "As India’s only automobile-free hill station, Matheran stands out for its clean air and peaceful ambiance. "
-                "Visitors explore its scenic viewpoints via walking trails, horseback rides, or vintage toy trains. "
-                "The absence of motor vehicles significantly reduces pollution and stress on the ecosystem. "
-                "Sustainable practices such as rainwater harvesting and forest conservation make it a model for green getaways."
+                "Matheran is free of motor vehicles, offering clean air and scenic trails. "
+                "Explore by foot, horseback, or toy train for a peaceful eco-retreat."
             ),
             "img": "images/matheran.jpeg",
             "link": "https://www.maharashtratourism.gov.in",
             "location": "https://www.google.com/maps/place/Matheran"
-
         },
         {
             "title": "Channapatna, Karnataka – Town of Toy Makers",
             "desc": (
-                "Famous for its vibrant wooden toys, Channapatna supports an artisan economy rooted in centuries-old tradition. "
-                "Tourism here directly uplifts local craftsmen and women who use sustainable materials and natural dyes. "
-                "Workshops, guided tours, and artisan markets give travelers an immersive experience in ethical craft tourism. "
-                "It’s a perfect blend of heritage preservation and community empowerment."
+                "Known for handcrafted wooden toys, Channapatna promotes sustainable crafts and artisan livelihoods. "
+                "Tourists can explore workshops and shop for eco-friendly souvenirs."
             ),
             "img": "images/channapatna.jpg",
             "link": "https://karnatakatourism.org/tour-item/channapatna",
@@ -156,9 +276,8 @@ def render():
         {
             "title": "Spiti Valley, Himachal Pradesh – High-Altitude Sustainability",
             "desc": (
-                "Spiti Valley promotes sustainable tourism through eco-lodges, solar-powered homestays, and low-impact trekking. "
-                "The local community, in partnership with NGOs, encourages waste reduction and cultural preservation. "
-                "Visitors are immersed in high-altitude Himalayan life while contributing to environmental and cultural conservation efforts."
+                "Spiti promotes eco-lodges, solar-powered homes, and mindful trekking. "
+                "Travelers immerse in Himalayan life while supporting conservation."
             ),
             "img": "images/spiti.jpeg",
             "link": "https://himachaltourism.gov.in",
@@ -167,9 +286,8 @@ def render():
         {
             "title": "Araku Valley, Andhra Pradesh – Tribal Eco-Tourism",
             "desc": (
-                "Nestled in the Eastern Ghats, Araku Valley is home to indigenous tribes and lush coffee plantations. "
-                "Tourism initiatives focus on supporting tribal communities through guided cultural tours, organic coffee experiences, and eco-stays. "
-                "It’s a peaceful retreat that celebrates tribal heritage and agro-ecological harmony."
+                "Home to tribal communities and coffee plantations, Araku offers guided cultural tours and eco-stays. "
+                "Tourism supports local heritage and sustainability."
             ),
             "img": "images/araku.jpg",
             "link": "https://tourism.ap.gov.in",
@@ -178,9 +296,8 @@ def render():
         {
             "title": "Ramnagar, Uttarakhand – Gateway to Wildlife Conservation",
             "desc": (
-                "Adjacent to Jim Corbett National Park, Ramnagar is a responsible wildlife tourism base. "
-                "Eco-resorts here promote conservation awareness, respect park rules, and collaborate with forest officials to ensure wildlife safety. "
-                "Visitors learn about tiger conservation while enjoying guided nature trails and local culture."
+                "Base for Jim Corbett National Park, Ramnagar promotes wildlife awareness through eco-resorts and guided safaris. "
+                "Tourism supports tiger conservation and local culture."
             ),
             "img": "images/ramnagar.jpeg",
             "link": "https://uttarakhandtourism.gov.in",
@@ -189,26 +306,25 @@ def render():
         {
             "title": "Auroville, Tamil Nadu – Experimental Sustainable Township",
             "desc": (
-                "Auroville is an international township dedicated to sustainable living and human unity. "
-                "It showcases renewable energy use, organic farming, waste management, and eco-architecture. "
-                "Visitors engage in workshops and volunteering programs, offering a hands-on understanding of conscious living."
+                "Auroville is dedicated to sustainability, with organic farms, renewable energy, and eco-architecture. "
+                "Visitors join workshops and conscious living programs."
             ),
             "img": "images/auroville.jpeg",
             "link": "https://auroville.org",
             "location": "https://www.google.com/maps/place/Auroville"
         },
         {
-            "title": "Bhuj, Gujarat – Post-Disaster Resilience and Craft Revival",
+            "title": "Bhuj, Gujarat – Post-Disaster Craft Revival",
             "desc": (
-                "After the 2001 earthquake, Bhuj emerged as a model of cultural resilience. "
-                "The city now thrives on responsible tourism by supporting artisans of Bandhani, embroidery, and block printing. "
-                "Craft-based homestays, craft villages like Bhujodi, and NGOs help visitors appreciate and contribute to heritage revival."
+                "Bhuj revived its economy post-earthquake through crafts like Bandhani and embroidery. "
+                "Homestays and artisan tours support cultural resilience and local livelihoods."
             ),
             "img": "images/bhuj.jpg",
             "link": "https://www.gujarattourism.com",
             "location": "https://www.google.com/maps/place/Bhuj"
         }
     ]
+
 
     lat_lon = {
         "Sikkim – India's First Organic State": [27.317, 88.606],
@@ -226,7 +342,7 @@ def render():
     }
 
 
-    m = folium.Map(location=[22.5937, 78.9629], zoom_start=5, tiles='cartodbpositron')
+    m = folium.Map(location=[22.5937, 78.9629], zoom_start=5)
 
     for dest in destinations:
         if dest["title"] in lat_lon:
@@ -235,7 +351,7 @@ def render():
             # Create an HTML popup with clickable link
             html = f'''
                 <div>
-                    <a href="{dest["location"]}" target="_blank" style="text-decoration:none; color:#007BFF;">
+                    <a href="{dest["location"]}" target="_blank" style="text-decoration:none; color:#0a48b2;">
                         {dest["title"]}
                     </a>
                 </div>
@@ -247,61 +363,55 @@ def render():
                 location=[lat, lon],
                 popup=popup,
                 tooltip=dest["title"],
-                icon=folium.Icon(color='green', icon='info-sign')
+                icon=folium.Icon(color='blue', icon='info-sign')
             ).add_to(m)
 
     
-
-
-
-
     # --- Display the map in Streamlit ---
     st.subheader("🗺️ Explore Destinations on Interactive Map")
     # --- Center the map using columns ---
     left, center, right = st.columns([1, 3, 1])
     with center:
-        st_folium(m, width=700, height=500)
+        st_folium(m, width=800, height=600)
 
-    # --- Display cards in 2-column layout ---
-    for i in range(0, len(destinations), 2):
-        cols = st.columns(2)
-        for j in range(2):
-            if i + j < len(destinations):
-                dest = destinations[i + j]
-                with cols[j]:
-                    st.expander(f"📍 {dest['title']}")
-                    st.image(dest["img"], width=500)
-                    st.markdown(
-                        f'<span style="display:flex; gap:10px;">'
-                        f'<a href="{dest["link"]}" target="_blank">🔗 Official Tourism Site</a>'
-                        f'<a href="{dest["location"]}" target="_blank">🗺️ Google Maps</a>'
-                        f'</span>',
-                        unsafe_allow_html=True
+   # Set initial visibility limit
+    VISIBLE_COUNT = 4
+
+    # Session state to store how many destinations are currently visible
+    if 'visible_count' not in st.session_state:
+        st.session_state.visible_count = VISIBLE_COUNT
+
+    # Function to display destinations in 2-column layout
+    def display_destinations(dest_list):
+        for i in range(0, len(dest_list), 2):
+            cols = st.columns(2)
+            for j in range(2):
+                if i + j < len(dest_list):
+                    dest = dest_list[i + j]
+                    with cols[j]:
+                        st.subheader(dest['title'])
+                        st.image(dest["img"], width=500)
+                        st.markdown(
+                            f'<span style="display:flex; gap:10px;">'
+                            f'<a href="{dest["link"]}" target="_blank">🔗 Official Tourism Site</a>'
+                            f'<a href="{dest["location"]}" target="_blank">🗺️ Google Maps</a>'
+                            f'</span>',
+                            unsafe_allow_html=True
                         )
+                        st.write(dest["desc"])
+            st.markdown("---")
 
-                    st.write(dest["desc"])
-                    
-        st.markdown("---")
+    # Display visible destinations
+    display_destinations(destinations[:st.session_state.visible_count])
 
-    # --- Sustainable Destinations (Text only) ---
-    st.header("Other Sustainable Destinations")
-    st.markdown("""
-    - 📍 **Spiti Valley** – Promotes community-based tourism and eco-stays  
-    - 📍 **Coorg** – Offers eco-lodges and promotes agri-tourism  
-    - 📍 **Kerala (Responsible Tourism Mission)** – Empowers local communities  
-    - 📍 **Meghalaya** – Home to living root bridges and low-impact rural tourism  
-    """)
+    # Show "View More" button if there are more destinations to show
+    if st.session_state.visible_count < len(destinations):
+        if st.button("View More"):
+            st.session_state.visible_count += VISIBLE_COUNT
 
-    # --- Traveler Pledge ---
-    st.header("Take the Responsible Traveler Pledge ✋")
-    if st.button("I Pledge to Travel Responsibly"):
-        st.success("Thank you! Your pledge supports a greener, more respectful India.")
 
-    # --- Contact Section ---
-    st.markdown("---")
-    st.subheader("📬 Get Involved")
-    st.markdown("Join the mission to promote sustainable tourism across India. Email us at [sustainable@tourismindia.org](mailto:sustainable@tourismindia.org)")
+    # UNTOUCHED PLACES
+    untouched_places()
 
-    # --- Footer ---
-    st.markdown("---")
-    st.caption("🇮🇳 Made with love for India's future | © 2025 Responsible Tourism India | Images used for educational purposes only.")
+
+
