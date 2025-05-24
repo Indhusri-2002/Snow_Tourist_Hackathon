@@ -1,7 +1,6 @@
 import snowflake.connector
 import streamlit as st
 
-@st.cache_resource
 def get_snowflake_connection():
     return snowflake.connector.connect(
         user=st.secrets["snowflake"]["user"],
