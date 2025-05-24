@@ -5,12 +5,12 @@ st.set_page_config(page_title="India Tourism Dashboard", layout="wide")
 
 st.markdown("""
     <style>
-    /* General tab styling */
     .stTabs [role="tab"] {
-        padding: 12px 24px;
+        padding: 14px 30px;
         color: #444;
         background-color: #f0f0f0;
         border: none;
+        border-radius: 8px;
         box-shadow: none;
     }
 
@@ -29,19 +29,19 @@ st.markdown("""
         box-shadow: none !important;
     }
 
-    /* Remove the orange bottom border/indicator */
-    .stTabs [role="tab"]:focus {
-        box-shadow: none !important;
-        border: none !important;
-        outline: none !important;
+    .st-ar {
+        justify-content: center !important;
+        gap:20px;
     }
-
-    /* Extra: remove the underline line below the tab bar */
-    .stTabs {
-        border-bottom-: none !important;
+    .st-c7 {
+        display:none !important; 
+    }
+    .st-emotion-cache-qoz3f2.erovr380 p {
+        font-size: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 
 
