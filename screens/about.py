@@ -4,8 +4,14 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 from components.UntouchedPlaces import untouched_places
+from utils.data_loader import load_datasets
 
 def render():
+
+    dfs = load_datasets()
+
+    df_places_to_visit = dfs['places_to_visit']
+
     # --- Hero Section with Text Left & Image Right ---
 
     st.markdown("""
@@ -15,10 +21,11 @@ def render():
         opacity: 0;
         padding: 20px;
         border-radius: 12px;
-        background-color: #e3f4fc;
-        color: #333;
-        background: linear-gradient(90deg,rgba(250, 255, 240, 1) 0%, rgba(173, 213, 255, 1) 50%, rgba(232, 255, 232, 1) 100%);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        background-color: transparent;
+        color: #fff;
+        # background: #99daff;
+        # background: linear-gradient(90deg,rgba(153, 218, 255, 1) 0%, rgba(196, 231, 255, 1) 50%, rgba(176, 227, 255, 1) 100%);
+        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
         margin-top: 20px;
         margin-bottom: 20px;
         font-family: 'Segoe UI', sans-serif;
@@ -50,16 +57,15 @@ def render():
         animation: fadeIn 1.5s ease-in-out forwards;
         opacity: 0;
         padding: 20px;
-        background-color: #e3f4fc;
+        background-color: transparent;
         border-radius: 12px;
-        color: #333;
+        color: #fff;
         font-family: 'Segoe UI', sans-serif;
         font-size: 1.05em;
-        line-height: 1.6;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        line-height: 1.2;
+        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
         display: flex;
         flex-direction: column;
-        gap:10px;
     }
 
     /* Animations */
@@ -75,7 +81,7 @@ def render():
 
     @keyframes blink-caret {
         from, to { border-color: transparent }
-        50% { border-color: #333 }
+        50% { border-color: #fff }
     }
     </style>
 
@@ -113,12 +119,11 @@ def render():
         flex: 1 1 calc(48% - 10px);
         display: flex;
         align-items: center;
-        border: 1px solid #444;
         border-radius: 12px;
         padding: 12px 16px;
-        background-color: #e3f4fc;
-        box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-        color: #333;
+        background-color: transparent;
+        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
+        color: #fff;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         opacity: 0;
         animation: fadeInUp 0.6s ease forwards;
@@ -135,7 +140,7 @@ def render():
 
     .tip-box:hover {
         transform: scale(1.03);
-        box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
     }
 
     .tip-icon {
@@ -145,7 +150,7 @@ def render():
 
     .tip-text {
         font-size: 16px;
-        color: #333;
+        color: #fff;
     }
 
     /* Animation */
@@ -199,219 +204,66 @@ def render():
 
 
     st.markdown("---")
-    st.header("📍 State-wise Responsible Destinations")
+    st.header("State-wise Responsible Places to Visit")
 
-    # --- Destination data ---
-    destinations = [
-        {
-            "title": "Sikkim – India's First Organic State",
-            "desc": (
-                "Sikkim is India's first fully organic state, known for eco-friendly farming and a ban on single-use plastics. "
-                "Terraced farms, monasteries, and local homestays highlight its natural beauty and sustainable tourism."
-            ),
-            "img": "images/sikkim.jpg",
-            "link": "https://sikkimtourism.gov.in",
-            "location": "https://www.google.com/maps/place/Sikkim"
-        },
-        {
-            "title": "Mawlynnong, Meghalaya – Asia's Cleanest Village",
-            "desc": (
-                "Nicknamed 'God’s Own Garden', Mawlynnong is famous for its cleanliness and plastic-free policies. "
-                "Visitors enjoy bamboo skywalks, stone paths, and eco-conscious homestays."
-            ),
-            "img": "images/mawlynnong.jpg",
-            "link": "https://www.meghalayatourism.in",
-            "location": "https://www.google.com/maps/place/Mawlynnong"
-        },
-        {
-            "title": "Thenmala, Kerala – India’s First Eco-Tourism Hub",
-            "desc": (
-                "Thenmala offers forest treks, tree huts, and cultural shows while preserving the Western Ghats ecosystem. "
-                "Trained local guides enhance the eco-tourism experience."
-            ),
-            "img": "images/thenmala.jpeg",
-            "link": "https://www.thenmalaecotourism.com",
-            "location": "https://www.google.com/maps/place/Thenmala"
-        },
-        {
-            "title": "Khonoma, Nagaland – Conservation Village",
-            "desc": (
-                "This Angami tribal village has banned hunting and created its own wildlife sanctuary. "
-                "Visitors experience traditional lifestyles and serene, green landscapes."
-            ),
-            "img": "images/khonoma.jpg",
-            "link": "https://tourism.nagaland.gov.in",
-            "location": "https://www.google.com/maps/place/Khonoma"
-        },
-        {
-            "title": "Majuli, Assam – World’s Largest River Island",
-            "desc": (
-                "Majuli blends culture and ecology with satras, mask-making, and wetland conservation. "
-                "Eco-stays and artisan interaction enrich this island visit."
-            ),
-            "img": "images/majuli.jpg",
-            "link": "https://tourism.assam.gov.in/portlets/majuli",
-            "location": "https://www.google.com/maps/place/Majuli"
-        },
-        {
-            "title": "Matheran, Maharashtra – India's Car-Free Hill Station",
-            "desc": (
-                "Matheran is free of motor vehicles, offering clean air and scenic trails. "
-                "Explore by foot, horseback, or toy train for a peaceful eco-retreat."
-            ),
-            "img": "images/matheran.jpeg",
-            "link": "https://www.maharashtratourism.gov.in",
-            "location": "https://www.google.com/maps/place/Matheran"
-        },
-        {
-            "title": "Channapatna, Karnataka – Town of Toy Makers",
-            "desc": (
-                "Known for handcrafted wooden toys, Channapatna promotes sustainable crafts and artisan livelihoods. "
-                "Tourists can explore workshops and shop for eco-friendly souvenirs."
-            ),
-            "img": "images/channapatna.jpg",
-            "link": "https://karnatakatourism.org/tour-item/channapatna",
-            "location": "https://www.google.com/maps/place/Channapatna"
-        },
-        {
-            "title": "Spiti Valley, Himachal Pradesh – High-Altitude Sustainability",
-            "desc": (
-                "Spiti promotes eco-lodges, solar-powered homes, and mindful trekking. "
-                "Travelers immerse in Himalayan life while supporting conservation."
-            ),
-            "img": "images/spiti.jpeg",
-            "link": "https://himachaltourism.gov.in",
-            "location": "https://www.google.com/maps/place/Spiti+Valley"
-        },
-        {
-            "title": "Araku Valley, Andhra Pradesh – Tribal Eco-Tourism",
-            "desc": (
-                "Home to tribal communities and coffee plantations, Araku offers guided cultural tours and eco-stays. "
-                "Tourism supports local heritage and sustainability."
-            ),
-            "img": "images/araku.jpg",
-            "link": "https://tourism.ap.gov.in",
-            "location": "https://www.google.com/maps/place/Araku+Valley"
-        },
-        {
-            "title": "Ramnagar, Uttarakhand – Gateway to Wildlife Conservation",
-            "desc": (
-                "Base for Jim Corbett National Park, Ramnagar promotes wildlife awareness through eco-resorts and guided safaris. "
-                "Tourism supports tiger conservation and local culture."
-            ),
-            "img": "images/ramnagar.jpeg",
-            "link": "https://uttarakhandtourism.gov.in",
-            "location": "https://www.google.com/maps/place/Ramnagar"
-        },
-        {
-            "title": "Auroville, Tamil Nadu – Experimental Sustainable Township",
-            "desc": (
-                "Auroville is dedicated to sustainability, with organic farms, renewable energy, and eco-architecture. "
-                "Visitors join workshops and conscious living programs."
-            ),
-            "img": "images/auroville.jpeg",
-            "link": "https://auroville.org",
-            "location": "https://www.google.com/maps/place/Auroville"
-        },
-        {
-            "title": "Bhuj, Gujarat – Post-Disaster Craft Revival",
-            "desc": (
-                "Bhuj revived its economy post-earthquake through crafts like Bandhani and embroidery. "
-                "Homestays and artisan tours support cultural resilience and local livelihoods."
-            ),
-            "img": "images/bhuj.jpg",
-            "link": "https://www.gujarattourism.com",
-            "location": "https://www.google.com/maps/place/Bhuj"
-        }
-    ]
-
-
-    lat_lon = {
-        "Sikkim – India's First Organic State": [27.317, 88.606],
-        "Mawlynnong, Meghalaya – Asia's Cleanest Village": [25.200, 92.018],
-        "Thenmala, Kerala – India’s First Eco-Tourism Hub": [8.943, 77.110],
-        "Khonoma, Nagaland – Conservation Village": [25.667, 94.000],
-        "Majuli, Assam – World’s Largest River Island": [27.000, 94.222],
-        "Matheran, Maharashtra – India's Car-Free Hill Station": [18.985, 73.272],
-        "Channapatna, Karnataka – Town of Toy Makers": [12.655, 77.284],
-        "Spiti Valley, Himachal Pradesh – High-Altitude Sustainability": [32.246, 78.033],
-        "Araku Valley, Andhra Pradesh – Tribal Eco-Tourism": [18.328, 82.868],
-        "Ramnagar, Uttarakhand – Gateway to Wildlife Conservation": [29.392, 79.126],
-        "Auroville, Tamil Nadu – Experimental Sustainable Township": [12.005, 79.808],
-        "Bhuj, Gujarat – Post-Disaster Resilience and Craft Revival": [23.250, 69.667]
-    }
-
-
+    # Create map
     m = folium.Map(location=[22.5937, 78.9629], zoom_start=5)
 
-    for dest in destinations:
-        if dest["title"] in lat_lon:
-            lat, lon = lat_lon[dest["title"]]
-            
-            # Create an HTML popup with clickable link
-            html = f'''
-                <div>
-                    <a href="{dest["location"]}" target="_blank" style="text-decoration:none; color:#0a48b2;">
-                        {dest["title"]}
-                    </a>
-                </div>
-            '''
-            iframe = folium.IFrame(html=html, width=250, height=50)
-            popup = folium.Popup(iframe, max_width=300)
+    # Iterate through DataFrame rows
+    for _, place in df_places_to_visit.iterrows():
+        lat = place['LAT']
+        lon = place['LONG']
+        html = f'''
+            <div>
+                <a href="{place["LOCATION"]}" target="_blank" style="text-decoration:none; color:#0a48b2;">
+                    {place["TITLE"]}
+                </a>
+            </div>
+        '''
+        iframe = folium.IFrame(html=html, width=250, height=50)
+        popup = folium.Popup(iframe, max_width=300)
 
-            folium.Marker(
-                location=[lat, lon],
-                popup=popup,
-                tooltip=dest["title"],
-                icon=folium.Icon(color='blue', icon='info-sign')
-            ).add_to(m)
+        folium.Marker(
+            location=[lat, lon],
+            popup=popup,
+            tooltip=place["TITLE"],
+            icon=folium.Icon(color='blue', icon='info-sign')
+        ).add_to(m)
 
-    
-    # --- Display the map in Streamlit ---
-    st.subheader("🗺️ Explore Destinations on Interactive Map")
-    # --- Center the map using columns ---
+    # Center the map in Streamlit
     left, center, right = st.columns([1, 3, 1])
     with center:
         st_folium(m, width=800, height=600)
 
-   # Set initial visibility limit
+    # Show destinations with "View More"
     VISIBLE_COUNT = 4
-
-    # Session state to store how many destinations are currently visible
     if 'visible_count' not in st.session_state:
         st.session_state.visible_count = VISIBLE_COUNT
 
-    # Function to display destinations in 2-column layout
-    def display_destinations(dest_list):
-        for i in range(0, len(dest_list), 2):
+    def display_destinations(dest_df):
+        for i in range(0, len(dest_df), 2):
             cols = st.columns(2)
             for j in range(2):
-                if i + j < len(dest_list):
-                    dest = dest_list[i + j]
+                if i + j < len(dest_df):
+                    dest = dest_df.iloc[i + j]
                     with cols[j]:
-                        st.subheader(dest['title'])
-                        st.image(dest["img"], width=500)
+                        st.subheader(f"{dest['TITLE']} – {dest['STATE']}")
+                        st.image(dest["IMG"], width=500)
                         st.markdown(
                             f'<span style="display:flex; gap:10px;">'
-                            f'<a href="{dest["link"]}" target="_blank">🔗 Official Tourism Site</a>'
-                            f'<a href="{dest["location"]}" target="_blank">🗺️ Google Maps</a>'
+                            f'<a href="{dest["LINK"]}" target="_blank">🔗 Official Tourism Site</a>'
+                            f'<a href="{dest["LOCATION"]}" target="_blank">🗺️ Google Maps</a>'
                             f'</span>',
                             unsafe_allow_html=True
                         )
-                        st.write(dest["desc"])
+                        st.write(dest["DESC"])
             st.markdown("---")
 
-    # Display visible destinations
-    display_destinations(destinations[:st.session_state.visible_count])
+    display_destinations(df_places_to_visit[:st.session_state.visible_count])
 
-    # Show "View More" button if there are more destinations to show
-    if st.session_state.visible_count < len(destinations):
+    if st.session_state.visible_count < len(df_places_to_visit):
         if st.button("View More"):
             st.session_state.visible_count += VISIBLE_COUNT
 
-
-    # UNTOUCHED PLACES
+    # Untouched Places
     untouched_places()
-
-
-
