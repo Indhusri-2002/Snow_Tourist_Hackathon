@@ -109,25 +109,37 @@ def untouched_places(df_untouched):
             gap: 1rem;
             padding: 1rem 0;
         }}
+
         .card {{
             min-width: 350px;
             max-width: 350px;
             flex-shrink: 0;
-            background: #e3f4fc;
+            background: #f8f8f8;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             scroll-snap-align: start;
             padding: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }}
+
+        .card:hover {{
+            transform: translateY(-5px) scale(1.02);
+        }}
+
         .card-img {{
             width: 100%;
             height: 180px;
             object-fit: cover;
             border-radius: 8px;
         }}
+
         .card-content {{
             padding-top: 10px;
         }}
+
         .no-image {{
             height: 180px;
             background-color: #eee;
@@ -138,11 +150,23 @@ def untouched_places(df_untouched):
             color: #666;
             font-size: 1rem;
         }}
+
+        @keyframes fadeInUp {{
+            0% {{
+                opacity: 0;
+                transform: translateY(20px);
+            }}
+            100% {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
         </style>
 
         <div class="scroll-container">
             {card_html}
         </div>
         """
+
 
         components.html(full_html, height=520, scrolling=True)

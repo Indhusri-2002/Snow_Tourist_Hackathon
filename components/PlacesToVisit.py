@@ -54,7 +54,7 @@ def places_to_visit(df_places_to_visit):
                         st.subheader(f"{dest['TITLE']} – {dest['STATE']}")
                         
                         img_url = dest['IMG']
-                        render_image_card(img_url,600,400)
+                        render_image_card(img_url,800,400)
 
                         st.markdown(
                             f'''
