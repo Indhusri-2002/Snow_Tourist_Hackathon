@@ -7,10 +7,24 @@ from utils.data_loader import load_datasets
 
 
 def render():  
-    total_jobs = 68.07
-    latest_fee = 20.06 
-    growth_rate = 26.4
-    max_tourists = 17.91
+    # st.markdown(
+    #     """
+    #     <style>
+    #     body, .main, [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
+    #         background-color: #D2D0A0 !important;
+    #         color: black !important;
+    #     }
+    #     </style>
+    #     """,
+    #     unsafe_allow_html=True
+    # )
+
+    dfs = load_datasets()
+    total_jobs =  dfs['gdp_jobs'].loc[dfs['gdp_jobs']['YR'] == '2020', 'TOTAL'].values[0]
+    latest_fee =  int(dfs['monthly_fee'].loc[dfs['monthly_fee']['YR'] == '2024', 'AUGUST'].values[0])/1000
+    growth_rate = dfs['fee'].loc[dfs['fee']['YR'] == 2021,'FEE_GROWTH'].values[0]
+    max_tourists = pd.to_numeric(dfs['tour_stat']['ITAS'], errors='coerce').max()
+    # max_tourists = 17.91
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -42,16 +56,19 @@ def render():
         st.markdown(kpi_card("Tourism FEE (in Rs)", f"{latest_fee}k", "By Aug 2024", delta = "-18.25%" ), unsafe_allow_html=True)
 
     with col3:
-        st.markdown(kpi_card("YoY Growth - FEE", f"{growth_rate}%", "By 2021", delta="103.3%"), unsafe_allow_html=True)
+        st.markdown(kpi_card("YoY Growth - FEE", f"{growth_rate}", "By 2021", delta="103.3%"), unsafe_allow_html=True)
 
     with col4:
         st.markdown(kpi_card("Maximum Tourists", f"{max_tourists} mil", "In 2019" ,delta = "2.81%" ), unsafe_allow_html=True)
 
     
-    dfs = load_datasets()
+    st.markdown("---")
     df_fee = dfs['fee']
-
-    st.subheader("India's Global Tourism Share and Rank")
+    st.markdown(
+    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "India’s Global Tourism Scorecard: How We Rank</h3>",
+    unsafe_allow_html=True
+    )
     col3, col4 = st.columns(2)
 
     with col3:
@@ -68,7 +85,12 @@ def render():
         fig_rank.update_yaxes(title="Rank (Lower is Better)")
         st.plotly_chart(fig_rank, use_container_width=True)
 
-    st.header("Tourist Categories Overview (FTAs, NRIs, ITAs)")
+    st.markdown("---")
+    st.markdown(
+    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "Who’s Visiting? A Look at FTAs, NRIs & ITAs</h3>",
+    unsafe_allow_html=True
+    )
     df_tour_stat = dfs['tour_stat']
 
     col1, col2 = st.columns(2)
@@ -124,8 +146,13 @@ def render():
     )
 
     df_jobs_gdp["YR"] = df_jobs_gdp["YR"].astype(str)
-
-    st.subheader("Tourism Jobs and GDP Contribution Overview")
+    st.markdown("---")
+    # st.subheader("Tourism Jobs and GDP Contribution Overview")
+    st.markdown(
+    "<h3 style='text-align: center; color: #F3F3E0; '>"
+    "Tourism’s Payday: Jobs Created & GDP Boosted</h3>",
+    unsafe_allow_html=True
+    )
 
     col1, col2, col3 = st.columns(3)
 
@@ -177,7 +204,13 @@ def render():
     
 
     df_state_jobs = dfs['state_jobs']
-    st.header("Jobs by State (2015-16)")
+    st.markdown("---")
+    # st.subheader("Jobs by State (2015-16)")
+    st.markdown(
+    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "State of Jobs: Who Hired the Most in Tourism?</h3>",
+    unsafe_allow_html=True
+    )
     col1, = st.columns(1)
 
     df_sorted = df_state_jobs.sort_values("JOB_COUNT")
@@ -189,7 +222,7 @@ def render():
             z="JOB_COUNT",
             color_continuous_scale="YlOrRd",
             labels={"z": "Tourism Jobs", "STATE": "State"},
-            title="Heatmap of Tourism-Related Jobs by State (2015-16)"
+            # title="Heatmap of Tourism-Related Jobs by State (2015-16)"
         )
 
         fig_state_jobs_heat.update_layout(xaxis_showticklabels=False)
@@ -197,8 +230,13 @@ def render():
         st.plotly_chart(fig_state_jobs_heat, use_container_width=True)
 
     
-
-    st.header("National Tourism Revenue Trends")
+    st.markdown("---")
+    # st.subheader("National Tourism Revenue Trends")
+    st.markdown(
+    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "Money in Motion: Tracking Tourism Revenue</h3>",
+    unsafe_allow_html=True
+    )
 
     col1, col2 = st.columns(2)
 
@@ -259,8 +297,13 @@ def render():
 
     df_scheme = dfs['scheme_amt']
     df_amt_ftas = dfs['amt_ftas']
-
-    st.header("Tourism Scheme Funding Overview")
+    st.markdown("---")
+    # st.subheader("Tourism Scheme Funding Overview")
+    st.markdown(
+    "<h3 style='text-align: center; color: #F3F3E0; '>"
+    "Fueling Tourism: Where the Government Invests</h3>",
+    unsafe_allow_html=True
+    )
 
     col1, col2 = st.columns(2)
 
@@ -281,39 +324,25 @@ def render():
 
 
     with col2:
-        # df_top_circuits = df_scheme.groupby("CIRCUIT")["AMT_SANC"].sum().reset_index()
-        # df_top_circuits = df_top_circuits.sort_values("AMT_SANC", ascending=False).head(10)
-
-        # fig_top_circuits = px.bar(df_top_circuits, x="AMT_SANC", y="CIRCUIT", orientation="h",
-        #                         labels={"AMT_SANC": "Amount Sanctioned (₹ Cr)", "CIRCUIT": "Circuit"},
-        #                         title="Top 10 Circuits by Sanctioned Amount")
-        # st.plotly_chart(fig_top_circuits, use_container_width=True)
         fig = go.Figure()
 
-# Line for Amount Sanctioned
         fig.add_trace(go.Bar(
             x=df_amt_ftas["YR"], y=df_amt_ftas["AMT_SANC"], name="Amount Sanctioned (Cr)",
             marker_color="royalblue", yaxis="y1"
         ))
 
-        # Line for FTAs
         fig.add_trace(go.Scatter(
             x=df_amt_ftas["YR"], y=df_amt_ftas["FTAS"], name="Foreign Tourist Arrivals (Mil)",
             mode="lines+markers", marker_color="orange", yaxis="y2"
         ))
 
-        # Layout
         fig.update_layout(
             xaxis=dict(title="Year"),
             yaxis=dict(title="Amount Sanctioned (Cr)", side="left"),
             yaxis2=dict(title="FTAs (Mil)", overlaying="y", side="right"),
             legend=dict(x=0.01, y=0.99),
-            height=500
+            height=500,
+            title = "Amount Sanctioned vs Foreign Tourist Arrivals"
         )
 
         st.plotly_chart(fig)
-
-
-
-
-
