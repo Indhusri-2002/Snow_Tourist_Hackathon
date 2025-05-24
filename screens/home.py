@@ -9,42 +9,14 @@ from components.Artforms import render_artforms_section
 from components.CulturalExperience import render_experiences_section
 
 def render():
-    # CSS and JS
-    st.markdown("""
-        <style>
-            .full-width-img img {
-                width: 100% !important;
-                height: auto;
-                display: block;
-                margin: 0;
-                padding: 0;
-            }
-            .center-container {
-                margin : 0;
-                padding:0;
-                max-width: 1000px;
-            }
-        </style>
-        <script>
-            function scrollToSection(section) {
-                const el = document.getElementsByName(section)[0];
-                if (el) {
-                    el.scrollIntoView({ behavior: "smooth" });
-                }
-            }
-        </script>
-    """, unsafe_allow_html=True)
-
     # Load Data
     dfs = load_datasets()
 
     df_artforms = dfs["art_forms"]
     df_experiences = dfs["experiences"]
     # Container
-    st.markdown('<div class="center-container">', unsafe_allow_html=True)
+    st.markdown('<div>', unsafe_allow_html=True)
     st.markdown("## Explore the Art, Culture, and Heritage of India")
-
-
     # Banner
     st.markdown('<div class="full-width-img">', unsafe_allow_html=True)
     st.image("images/home_page.jpeg", use_container_width=True)
@@ -64,7 +36,7 @@ def render():
             Join us in preserving traditions while exploring them—smartly, sustainably, and soulfully.
         </p>
     </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 
     # Images with Buttons
@@ -80,16 +52,21 @@ def render():
         left, center, right = st.columns([1, 1, 1])
         with center:
             if st.button("View Different Art forms of India", key="art_btn"):
-                st.session_state.active_tab = "art"
-                st.markdown('<script>scrollToSection("art-section")</script>', unsafe_allow_html=True)
+                if st.session_state.active_tab == "art":
+                    st.session_state.active_tab = ""
+                else:
+                    st.session_state.active_tab = "art"
+                
 
     with col2:
         st.image(culture_image_resized, caption="**Cultural Experiences in India**", use_container_width=True)
         left, center, right = st.columns([1, 1, 1])
         with center:
             if st.button("Explore the Cultural Experiences of India", key="culture_btn"):
-                st.session_state.active_tab = "culture"
-                st.markdown('<script>scrollToSection("culture-section")</script>', unsafe_allow_html=True)
+                if st.session_state.active_tab == "culture":
+                    st.session_state.active_tab = ""
+                else:
+                    st.session_state.active_tab = "culture"
 
 
     # Render Sections
@@ -104,7 +81,7 @@ def render():
         render_experiences_section(df_experiences)
 
     st.markdown("---")
-    st.markdown("## UNESCO identified tangible world heritage sites in India")
+    st.markdown("""<h1 style="font-size:1.7rem; margin-bottom: 30px;"> UNESCO identified tangible world heritage sites in India</h1>""",unsafe_allow_html=True)
     left, center, right = st.columns([2,5,2])
     with center:
         st.image("images/unesco_heritage.jpg","",use_container_width=True )

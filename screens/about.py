@@ -29,7 +29,7 @@ def render():
 
     .header-section h1 {
         font-size: 2.4em;
-        color: #0a48b2;
+        color: #008000;
         margin-bottom: 10px;
     }
 
