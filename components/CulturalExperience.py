@@ -42,30 +42,30 @@ def render_experiences_section(df_experiences):
         st.info("No cultural experiences found or images missing.")
         return
 
-    # Final HTML block
     html_code = f"""
     <style>
         .carousel-wrapper {{
             position: relative;
             width: 100%;
-            max-width: 930px;
-            margin: auto;
+            max-width: 960px;
+            margin: 5rem auto 2rem;
             overflow: hidden;
         }}
         .carousel-track {{
             display: flex;
-            transition: transform 0.5s ease;
+            transition: transform 0.5s ease-in-out;
         }}
         .carousel-item {{
             display: flex;
-            width: 900px;
+            flex-direction: row;
+            width: 928px;
             height: 400px;
             margin: 0 16px;
-            background: #faf9f6;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
+            background-color: #faf9f6;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             flex-shrink: 0;
+            overflow: hidden;
         }}
         .carousel-image {{
             flex: 70%;
@@ -84,19 +84,49 @@ def render_experiences_section(df_experiences):
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.4);
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            font-size: 1.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 2rem;
             cursor: pointer;
-            z-index: 1;
+            z-index: 10;
+            border-radius: 8px;
         }}
         .left-arrow {{
-            left: 0;
+            left: 8px;
         }}
         .right-arrow {{
-            right: 0;
+            right: 8px;
+        }}
+        @media (prefers-color-scheme: dark) {{
+            .carousel-item {{
+                background: #1f1f1f;
+                color: #f0f0f0;
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            }}
+            .carousel-button {{
+                background-color: rgba(255, 255, 255, 0.3);
+            }}
+            .carousel-text {{
+                color: #e0e0e0;
+            }}
+        }}
+        @media (max-width: 960px) {{
+            .carousel-item {{
+                flex-direction: column;
+                height: auto;
+                width: 90%;
+                margin: 0 auto;
+            }}
+            .carousel-image {{
+                flex: none;
+                height: 200px;
+            }}
+            .carousel-text {{
+                flex: none;
+                height: auto;
+            }}
         }}
     </style>
     <div class="carousel-wrapper">
@@ -111,7 +141,7 @@ def render_experiences_section(df_experiences):
         const track = document.getElementById('carouselTrack');
         const totalItems = document.querySelectorAll('.carousel-item').length;
         function moveSlide(direction) {{
-            const itemWidth = 900 + 32;
+            const itemWidth = 960;
             currentIndex += direction;
             if (currentIndex < 0) currentIndex = 0;
             if (currentIndex >= totalItems) currentIndex = totalItems - 1;
@@ -120,4 +150,4 @@ def render_experiences_section(df_experiences):
     </script>
     """
 
-    components.html(html_code, height=450)
+    components.html(html_code, height=500)

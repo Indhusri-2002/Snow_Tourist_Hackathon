@@ -4,15 +4,14 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 from components.UntouchedPlaces import untouched_places
+from components.PlacesToVisit import places_to_visit
 from utils.data_loader import load_datasets
 
 def render():
 
     dfs = load_datasets()
-
     df_places_to_visit = dfs['places_to_visit']
-
-    # --- Hero Section with Text Left & Image Right ---
+    df_untouched = dfs['untouched_places']
 
     st.markdown("""
     <style>
@@ -21,13 +20,9 @@ def render():
         opacity: 0;
         padding: 20px;
         border-radius: 12px;
-        background-color: transparent;
-        color: #fff;
-        # background: #99daff;
-        # background: linear-gradient(90deg,rgba(153, 218, 255, 1) 0%, rgba(196, 231, 255, 1) 50%, rgba(176, 227, 255, 1) 100%);
-        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
-        margin-top: 20px;
-        margin-bottom: 20px;
+        box-shadow: 0 0 8px rgba(255,255,255,0.3);
+        margin-top: 20px; 
+        margin-bottom: 30px;
         font-family: 'Segoe UI', sans-serif;
         text-align: center;
     }
@@ -44,12 +39,11 @@ def render():
         white-space: nowrap;
         margin: 0 auto 20px auto;
         letter-spacing: .05em;
-        animation: typing 4s steps(60, end), blink-caret 0.75s step-end infinite;
+        animation: typing 3s steps(60, end), blink-caret 0.6s step-end infinite;
         font-style: italic;
         color: #777;
         font-size: 1.2em;
-        width: 100%;
-        max-width: 650px;
+        max-width: 65ch;
     }
 
     /* Text content section */
@@ -57,15 +51,14 @@ def render():
         animation: fadeIn 1.5s ease-in-out forwards;
         opacity: 0;
         padding: 20px;
-        background-color: transparent;
         border-radius: 12px;
-        color: #fff;
         font-family: 'Segoe UI', sans-serif;
         font-size: 1.05em;
         line-height: 1.2;
-        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
+        box-shadow: 0 0 8px rgba(255,255,255,0.3);
         display: flex;
         flex-direction: column;
+        margin-bottom: 30px;
     }
 
     /* Animations */
@@ -74,21 +67,34 @@ def render():
         100% { opacity: 1; transform: translateY(0); }
     }
 
+
     @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
+        from { width: 0ch; }
+        to { width: 65ch; } /* Adjust to match actual character count */
     }
 
     @keyframes blink-caret {
         from, to { border-color: transparent }
-        50% { border-color: #fff }
+        50% { border-color: #777 }
     }
+
+    @media (prefers-color-scheme: light) {
+        .header-section {
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .content-section {
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+        }
+    }
+    
     </style>
 
     <!-- Header Section -->
     <div class="header-section">
         <h1>Responsible Tourism in India</h1>
         <div class="typewriter">"Travel with respect. Travel with purpose. Discover India sustainably."</div>
+
     </div>
 
     <!-- Content Section -->
@@ -102,17 +108,13 @@ def render():
     </div>
     """, unsafe_allow_html=True)
 
-
-
-
     st.markdown("""
     <style>
     .tip-container {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        gap: 16px;
-        margin-top: 20px;
+        gap: 30px;
     }
 
     .tip-box {
@@ -121,14 +123,10 @@ def render():
         align-items: center;
         border-radius: 12px;
         padding: 12px 16px;
-        background-color: transparent;
-        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
-        color: #fff;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         opacity: 0;
         animation: fadeInUp 0.6s ease forwards;
         animation-fill-mode: forwards;
-        margin-bottom: 10px;
     }
 
     .tip-box:nth-child(1) { animation-delay: 0s; }
@@ -138,11 +136,6 @@ def render():
     .tip-box:nth-child(5) { animation-delay: 0.4s; }
     .tip-box:nth-child(6) { animation-delay: 0.5s; }
 
-    .tip-box:hover {
-        transform: scale(1.03);
-        box-shadow: 0 4px 10px rgba(255,255,255,0.3);
-    }
-
     .tip-icon {
         font-size: 32px;
         margin-right: 15px;
@@ -150,7 +143,6 @@ def render():
 
     .tip-text {
         font-size: 16px;
-        color: #fff;
     }
 
     /* Animation */
@@ -162,6 +154,19 @@ def render():
         100% {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    /* Theme support */
+    @media (prefers-color-scheme: light) {
+        .tip-box {
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .tip-box {
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
         }
     }
 
@@ -204,66 +209,11 @@ def render():
 
 
     st.markdown("---")
-    st.header("State-wise Responsible Places to Visit")
+    
+    # places to visit
+    places_to_visit(df_places_to_visit)
 
-    # Create map
-    m = folium.Map(location=[22.5937, 78.9629], zoom_start=5)
-
-    # Iterate through DataFrame rows
-    for _, place in df_places_to_visit.iterrows():
-        lat = place['LAT']
-        lon = place['LONG']
-        html = f'''
-            <div>
-                <a href="{place["LOCATION"]}" target="_blank" style="text-decoration:none; color:#0a48b2;">
-                    {place["TITLE"]}
-                </a>
-            </div>
-        '''
-        iframe = folium.IFrame(html=html, width=250, height=50)
-        popup = folium.Popup(iframe, max_width=300)
-
-        folium.Marker(
-            location=[lat, lon],
-            popup=popup,
-            tooltip=place["TITLE"],
-            icon=folium.Icon(color='blue', icon='info-sign')
-        ).add_to(m)
-
-    # Center the map in Streamlit
-    left, center, right = st.columns([1, 3, 1])
-    with center:
-        st_folium(m, width=800, height=600)
-
-    # Show destinations with "View More"
-    VISIBLE_COUNT = 4
-    if 'visible_count' not in st.session_state:
-        st.session_state.visible_count = VISIBLE_COUNT
-
-    def display_destinations(dest_df):
-        for i in range(0, len(dest_df), 2):
-            cols = st.columns(2)
-            for j in range(2):
-                if i + j < len(dest_df):
-                    dest = dest_df.iloc[i + j]
-                    with cols[j]:
-                        st.subheader(f"{dest['TITLE']} – {dest['STATE']}")
-                        st.image(dest["IMG"], width=500)
-                        st.markdown(
-                            f'<span style="display:flex; gap:10px;">'
-                            f'<a href="{dest["LINK"]}" target="_blank">🔗 Official Tourism Site</a>'
-                            f'<a href="{dest["LOCATION"]}" target="_blank">🗺️ Google Maps</a>'
-                            f'</span>',
-                            unsafe_allow_html=True
-                        )
-                        st.write(dest["DESC"])
-            st.markdown("---")
-
-    display_destinations(df_places_to_visit[:st.session_state.visible_count])
-
-    if st.session_state.visible_count < len(df_places_to_visit):
-        if st.button("View More"):
-            st.session_state.visible_count += VISIBLE_COUNT
+    st.markdown("---")
 
     # Untouched Places
-    untouched_places()
+    untouched_places(df_untouched)

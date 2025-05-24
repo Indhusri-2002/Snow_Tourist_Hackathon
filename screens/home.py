@@ -21,8 +21,6 @@ def render():
             }
             .center-container {
                 max-width: 1000px;
-                margin: auto;
-                padding: 2rem;
             }
         </style>
         <script>
@@ -49,7 +47,6 @@ def render():
     st.markdown("</div>", unsafe_allow_html=True)
 
     # Intro
-    st.markdown("##")
     st.markdown("### Explore the Art, Culture, and Heritage of India")
     st.write("""
         India is a land of diverse traditions, vibrant festivals, and rich history. 
@@ -68,18 +65,22 @@ def render():
 
     with col1:
         st.image(art_image_resized, caption="**Art Forms of India**", use_container_width=True)
-        if st.button("View Different Art forms of India", key="art_btn"):
-            st.session_state.active_tab = "art"
-            st.markdown('<script>scrollToSection("art-section")</script>', unsafe_allow_html=True)
+        left, center, right = st.columns([1, 1, 1])
+        with center:
+            if st.button("View Different Art forms of India", key="art_btn"):
+                st.session_state.active_tab = "art"
+                st.markdown('<script>scrollToSection("art-section")</script>', unsafe_allow_html=True)
 
     with col2:
         st.image(culture_image_resized, caption="**Cultural Experiences in India**", use_container_width=True)
-        if st.button("Explore the Cultural Experiences of India", key="culture_btn"):
-            st.session_state.active_tab = "culture"
-            st.markdown('<script>scrollToSection("culture-section")</script>', unsafe_allow_html=True)
+        left, center, right = st.columns([1, 1, 1])
+        with center:
+            if st.button("Explore the Cultural Experiences of India", key="culture_btn"):
+                st.session_state.active_tab = "culture"
+                st.markdown('<script>scrollToSection("culture-section")</script>', unsafe_allow_html=True)
 
     # Divider
-    st.markdown("<hr />", unsafe_allow_html=True)
+    st.markdown("---")
 
     # Render Sections
     if "active_tab" not in st.session_state:

@@ -5,37 +5,34 @@ import streamlit.components.v1 as components
 import pandas as pd
 import folium
 from streamlit_folium import st_folium
-from utils.data_loader import load_datasets
+from components.ImageCard import render_image_card
 
-# Map center
-map_center = [22.9734, 78.6569]  # India centroid
-map_zoom = 5
 
-def untouched_places():
+# Constants
+MAP_CENTER = [22.9734, 78.6569]
+MAP_ZOOM = 5
+IMAGE_DIR = "images/untouched_places"
+
+def untouched_places(df_untouched):
     st.title("Untouched Places in India")
 
-    dfs = load_datasets()
-    df_untouched = dfs['untouched_places']
-
+    # Dropdown filter
     selected_place = st.selectbox("Select a place", ["All"] + df_untouched["PLACE"].unique().tolist())
 
-    if selected_place != "All":
-        df_filtered = df_untouched[df_untouched["PLACE"] == selected_place]
-    else:
-        df_filtered = df_untouched
+    df_filtered = df_untouched if selected_place == "All" else df_untouched[df_untouched["PLACE"] == selected_place]
 
     if df_filtered.empty:
         st.warning("No data available for the selected place.")
         return
 
-    # Create map
-    m = folium.Map(location=map_center, zoom_start=map_zoom)
+    # Create the map
+    m = folium.Map(location=MAP_CENTER, zoom_start=MAP_ZOOM)
     for _, row in df_filtered.iterrows():
         place = row["PLACE"]
-        lat = row['LAT']
-        lon = row['LON']
-        link = row['LINK_URL']
-        
+        lat = row["LAT"]
+        lon = row["LON"]
+        link = row["LINK_URL"]
+
         popup_html = f"<b>{place}</b><br><a href='{link}' target='_blank'>Open in Google Maps</a>"
         folium.Marker(
             location=[lat, lon],
@@ -44,12 +41,13 @@ def untouched_places():
             icon=folium.Icon(color='red', icon='info-sign')
         ).add_to(m)
 
-    st.subheader("Map View")
+    
 
     if selected_place != "All":
-        # Side-by-side layout
+        # Show map and details side by side
         col1, col2 = st.columns([1, 1])
         with col1:
+            st.subheader("Map View")
             st_folium(m, width=600, height=500)
         with col2:
             row = df_filtered.iloc[0]
@@ -57,30 +55,30 @@ def untouched_places():
             state = row["STATE_UT"]
             reason = row["REASON"]
             season = row["BEST_SEASON"]
-            image_path = f"images/untouched_places/{place.lower().replace(' ', '_')}.jpeg"
             link = row["LINK_URL"]
+            image_file = f"{place.lower().replace(' ', '_')}.jpeg"
+            image_path = os.path.join(IMAGE_DIR, image_file)
 
-            st.markdown(f"### {place} ({state})")
-            if os.path.exists(image_path):
-                st.image(image_path, width=500)
-            else:
-                st.info("No image available")
+            st.subheader(f"{place} ({state})")
+            render_image_card(image_path,500,330)
             st.write(f"**Reason:** {reason}")
             st.write(f"**Best Season:** {season}")
             st.markdown(f"[Open in Google Maps]({link})")
+
     else:
-        # Show map then carousel
+        # Map on top, horizontal card scroll below
+        st.subheader("Map View")
         st_folium(m, width=700, height=500)
 
         card_html = ""
-
         for _, row in df_filtered.iterrows():
             place = row["PLACE"]
             state = row["STATE_UT"]
             reason = row["REASON"]
             season = row["BEST_SEASON"]
-            image_path = f"images/untouched_places/{place.lower().replace(' ', '_')}.jpeg"
             link = row["LINK_URL"]
+            image_file = f"{place.lower().replace(' ', '_')}.jpeg"
+            image_path = os.path.join(IMAGE_DIR, image_file)
 
             try:
                 with open(image_path, "rb") as img_file:
@@ -101,6 +99,7 @@ def untouched_places():
             </div>
             """
 
+        # Final scrollable section
         full_html = f"""
         <style>
         .scroll-container {{
@@ -110,25 +109,37 @@ def untouched_places():
             gap: 1rem;
             padding: 1rem 0;
         }}
+
         .card {{
             min-width: 350px;
             max-width: 350px;
             flex-shrink: 0;
-            background: #e3f4fc;
+            background: #f8f8f8;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             scroll-snap-align: start;
             padding: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }}
+
+        .card:hover {{
+            transform: translateY(-5px) scale(1.02);
+        }}
+
         .card-img {{
             width: 100%;
             height: 180px;
             object-fit: cover;
             border-radius: 8px;
         }}
+
         .card-content {{
             padding-top: 10px;
         }}
+
         .no-image {{
             height: 180px;
             background-color: #eee;
@@ -137,6 +148,18 @@ def untouched_places():
             align-items: center;
             justify-content: center;
             color: #666;
+            font-size: 1rem;
+        }}
+
+        @keyframes fadeInUp {{
+            0% {{
+                opacity: 0;
+                transform: translateY(20px);
+            }}
+            100% {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
         }}
         </style>
 
@@ -145,4 +168,5 @@ def untouched_places():
         </div>
         """
 
-        components.html(full_html, height=500, scrolling=True)
+
+        components.html(full_html, height=520, scrolling=True)
