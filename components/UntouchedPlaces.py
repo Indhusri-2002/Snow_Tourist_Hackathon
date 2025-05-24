@@ -119,7 +119,7 @@ def untouched_places(df_untouched):
             padding: 12px;
             background-color: #f8f8f8;
             color: #000000;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            box-shadow: 0 0 8px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: fadeInUp 0.8s ease forwards;
             opacity: 0;
@@ -157,7 +157,7 @@ def untouched_places(df_untouched):
             .card {{
                 background-color: #000;
                 color: #fff;
-                box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+                box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
             }}
             .card:hover {{
                 box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
