@@ -114,19 +114,21 @@ def untouched_places(df_untouched):
             min-width: 350px;
             max-width: 350px;
             flex-shrink: 0;
-            background: #f8f8f8;
             border-radius: 12px;
             scroll-snap-align: start;
-            padding: 10px;
+            padding: 12px;
+            background-color: #f8f8f8;
+            color: #000000;
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: fadeInUp 0.8s ease forwards;
             opacity: 0;
             transform: translateY(20px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }}
 
         .card:hover {{
             transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }}
 
         .card-img {{
@@ -142,13 +144,28 @@ def untouched_places(df_untouched):
 
         .no-image {{
             height: 180px;
-            background-color: #eee;
+            background-color: #ddd;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #666;
             font-size: 1rem;
+            color: #555;
+        }}
+
+        @media (prefers-color-scheme: dark) {{
+            .card {{
+                background-color: #000;
+                color: #fff;
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            }}
+            .card:hover {{
+                box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+            }}
+            .no-image {{
+                background-color: #333;
+                color: #ccc;
+            }}
         }}
 
         @keyframes fadeInUp {{
