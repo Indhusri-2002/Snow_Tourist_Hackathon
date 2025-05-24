@@ -7,18 +7,7 @@ from utils.data_loader import load_datasets
 
 
 def render():  
-    # st.markdown(
-    #     """
-    #     <style>
-    #     body, .main, [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
-    #         background-color: #D2D0A0 !important;
-    #         color: black !important;
-    #     }
-    #     </style>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
-
+ 
     dfs = load_datasets()
     total_jobs =  dfs['gdp_jobs'].loc[dfs['gdp_jobs']['YR'] == '2020', 'TOTAL'].values[0]
     latest_fee =  int(dfs['monthly_fee'].loc[dfs['monthly_fee']['YR'] == '2024', 'AUGUST'].values[0])/1000
@@ -40,7 +29,7 @@ def render():
         subtitle_html = f"<p style='color:gray; margin:4px 0;'>{subtitle}</p>" if subtitle else ""
 
         html = f"""
-        <div style="border:1px solid #ccc; border-radius:10px; padding:15px; text-align:center;">
+        <div style="border:1px solid #ccc; border-radius:10px; padding:15px; text-align:center; margin-top: 30px;">
             <h4 style="margin-bottom:5px;">{title}</h4>
             <h2 style="margin:0;">{value}</h2>
             {delta_html}
@@ -65,7 +54,7 @@ def render():
     st.markdown("---")
     df_fee = dfs['fee']
     st.markdown(
-    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "<h3 style='text-align: center;'>"
     "India’s Global Tourism Scorecard: How We Rank</h3>",
     unsafe_allow_html=True
     )
@@ -87,7 +76,7 @@ def render():
 
     st.markdown("---")
     st.markdown(
-    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "<h3 style='text-align: center;'>"
     "Who’s Visiting? A Look at FTAs, NRIs & ITAs</h3>",
     unsafe_allow_html=True
     )
@@ -149,7 +138,7 @@ def render():
     st.markdown("---")
     # st.subheader("Tourism Jobs and GDP Contribution Overview")
     st.markdown(
-    "<h3 style='text-align: center; color: #F3F3E0; '>"
+    "<h3 style='text-align: center; '>"
     "Tourism’s Payday: Jobs Created & GDP Boosted</h3>",
     unsafe_allow_html=True
     )
@@ -207,7 +196,7 @@ def render():
     st.markdown("---")
     # st.subheader("Jobs by State (2015-16)")
     st.markdown(
-    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "<h3 style='text-align: center;'>"
     "State of Jobs: Who Hired the Most in Tourism?</h3>",
     unsafe_allow_html=True
     )
@@ -233,7 +222,7 @@ def render():
     st.markdown("---")
     # st.subheader("National Tourism Revenue Trends")
     st.markdown(
-    "<h3 style='text-align: center; color: #F3F3E0;'>"
+    "<h3 style='text-align: center;'>"
     "Money in Motion: Tracking Tourism Revenue</h3>",
     unsafe_allow_html=True
     )
@@ -300,7 +289,7 @@ def render():
     st.markdown("---")
     # st.subheader("Tourism Scheme Funding Overview")
     st.markdown(
-    "<h3 style='text-align: center; color: #F3F3E0; '>"
+    "<h3 style='text-align: center; '>"
     "Fueling Tourism: Where the Government Invests</h3>",
     unsafe_allow_html=True
     )
