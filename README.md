@@ -1,4 +1,4 @@
-# 🇮🇳 Soul of India – A Data-Driven Responsible Tourism Guide
+# Soul of India – A Data-Driven Responsible Tourism Guide
 
 **Soul of India** is a Streamlit-powered platform developed as part of the Snowflake Tourism Hackathon.  
 It celebrates the vibrant culture, heritage, and sustainable tourism practices of India through interactive visualizations, maps, and curated insights.
