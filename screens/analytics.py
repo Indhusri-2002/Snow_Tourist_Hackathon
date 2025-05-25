@@ -335,3 +335,14 @@ def render():
         )
 
         st.plotly_chart(fig)
+        
+    st.markdown("---")
+    st.markdown("### Glossary")
+
+    st.markdown("""
+        - FTA - Foreign Tourist Arrival
+        - NRI - Non Residential Indian
+        - ITA - International Tourist Arrival
+        - FEE - Foreign Exchange Earnings 
+        - Tourism Receipts - The total expenditure by international tourists within the destination country.
+    """)
