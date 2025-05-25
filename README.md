@@ -43,26 +43,23 @@ Soul of India is a Streamlit-based web application designed as a comprehensive p
 - Python, Streamlit (for frontend and backend)  
 - Snowflake (for data storage and querying)  
 - Pandas, Plotly, Folium (for data processing and visualizations)  
-- streamlit-option-menu, streamlit-folium (UI enhancements)  
+- streamlit-folium (UI enhancements)  
 
 ---
 
-## 🧾 Requirements
+## 🚀 How to Run / Setup
 
-Install these Python dependencies before running the app:
+Follow these steps to set up and run the project locally:
 
-```txt
-streamlit
-snowflake-connector-python
-pandas
-plotly>=5.0.0
-folium
-streamlit-folium
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Indhusri-2002/Snow_Tourist_Hackathon.git
+```
+```bash
+cd Snow_Tourist_Hackathon
 ```
 
----
-
-## ❄️ Snowflake Configuration
+### 2.❄️ Snowflake Configuration
 
 To connect the app to Snowflake, create a `.streamlit/secrets.toml` file in your project root with the following keys:
 
@@ -76,18 +73,6 @@ role = "your_role_name"
 warehouse = "your_warehouse_name"
 database = "your_database_name"
 schema = "your_schema_name"
-
-
-## 🚀 How to Run / Setup
-
-Follow these steps to set up and run the project locally:
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Indhusri-2002/Snow_Tourist_Hackathon.git
-```
-```bash
-cd Snow_Tourist_Hackathon
 ```
 
 ### 2. (Optional) Create a Virtual Environment
@@ -105,7 +90,21 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
+### 3. Install Dependencies /  🧾 Requirements
+
+Install these Python dependencies before running the app:
+
+```txt
+streamlit
+snowflake-connector-python
+pandas
+plotly>=5.0.0
+folium
+streamlit-folium
+```
+
+---
+
 ```bash
 pip install -r requirements.txt
 ```
