@@ -9,15 +9,19 @@ It celebrates the vibrant culture, heritage, and sustainable tourism practices o
 
 ## 🧩 Problem Statement
 
-Tourism is a vital sector for India's economy but faces challenges such as over-tourism, environmental degradation, and loss of cultural heritage. There is a pressing need for tools that promote responsible tourism by raising awareness, supporting local communities, and preserving India’s rich cultural diversity.
+Design, develop, and produce a solution on Streamlit that showcases traditional art forms, uncovers cultural experiences offered across the country, and promotes responsible tourism.
 
-The challenge requires innovative data-driven solutions to:
+**Context:**
 
-- Showcase India’s diverse art, culture, and heritage.  
-- Provide insightful tourism analytics and economic impact data.  
-- Encourage sustainable and responsible travel practices.  
-- Highlight lesser-known, untouched destinations for balanced tourism growth.
+India's art and culture space is incredibly diverse and rich, encompassing a wide array of traditions and beliefs, influenced by both ancient and modern times, as well as regional, religious and cultural elements. Dive into the heart of India's artistic and cultural heritage with a story that can enrich both the traveller's journey and the preservation of our cultural treasures—the data-first way!
 
+**Resources:**
+
+1. Explore government contributions to improve art, culture and heritage in India, and discover how it is linked with tourism by exploring data on https://www.data.gov.in.
+
+2. Find out seasonalities and trends in tourism to cultural hotspots. Identify areas that are relatively untouched and why they are so.
+
+3. Create a story covering all these aspects through Snowflake and Streamlit.
 ---
 
 

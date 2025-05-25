@@ -1,7 +1,7 @@
 import streamlit as st
 from screens import home, analytics, about
 
-st.set_page_config(page_title="India Tourism Dashboard", layout="wide")
+st.set_page_config(page_title="Soul of India", layout="wide")
 
 st.markdown("""
     <style>
